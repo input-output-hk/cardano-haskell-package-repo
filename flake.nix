@@ -37,7 +37,8 @@
   outputs = { self, nixpkgs, flake-utils, foliage, haskell-nix, CHaP, iohk-nix, ... }:
     let
       inherit (nixpkgs) lib;
-      inherit (import ./nix/chap-meta.nix { inherit lib CHaP; }) chap-package-latest-versions chap-package-versions mkPackageTreeWith;
+      inherit (import ./nix/chap-meta.nix { inherit lib CHaP; })
+        chap-package-latest-versions chap-package-versions mkPackageTreeWith addPackageKeys;
 
       smokeTestPackages = [
         "plutus-ledger-api"
@@ -231,7 +232,7 @@
       # Extra configurations (possibly compiler-dependent) to add to all projects.
       extraConfig = compiler:
         {
-          modules = [
+          modules = builtins.map addPackageKeys [
             {
               # Packages that depend on the plutus-tx plugin have broken haddock
               packages = {
